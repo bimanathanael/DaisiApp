@@ -1,0 +1,21 @@
+{
+  "name": "daisiapp",
+  "version": "1.0.0",
+  "description": "Whatsapp Profile subscription with nodeJs and mongoDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bimanathanael/DaisiApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bimanathanael/DaisiApp/issues"
+  },
+  "homepage": "https://github.com/bimanathanael/DaisiApp#readme"
+}

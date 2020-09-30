@@ -121,9 +121,7 @@ class ProfileControllers {
           ]
 
           currentServices.forEach(service => {
-            console.log(service, "masuk")
             if(service.name == match[1] && service.time == `${match[2]} ${match[3]}`){
-              console.log(service, "<<<<<<if")
               service.selected = true
             }
             userSelection.push(service)
@@ -140,7 +138,6 @@ class ProfileControllers {
           product
             .save()
             .then(doc => {
-              console.log(doc)
               return res.status(200).json(doc)
             })
             .catch( err => {
@@ -149,11 +146,9 @@ class ProfileControllers {
         } else {
           let updatedSelection = []
           let userSelection = doc.channels
-          console.log(doc, 'USER SELECTION')
 
           userSelection.forEach(service => {
             if(service.name == match[1] && service.time == `${match[2]} ${match[3]}`){
-              console.log(service, "<<<<<<if")
               service.selected = true
             }
             updatedSelection.push(service)

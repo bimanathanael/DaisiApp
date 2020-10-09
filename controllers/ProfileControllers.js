@@ -1,7 +1,9 @@
 const Profile = require('../models/Profile')
 const mongoose = require('mongoose')
+const axios = require('axios');
 
 class ProfileControllers {
+
   static allProfile( req, res ) {
     Profile
       .find()
@@ -52,10 +54,6 @@ class ProfileControllers {
   }
 
   static updateProf( req, res) {
-    if(!req.body.phone|| !req.body.sender || !req.body.message ){
-      return res.status(400).json({errMsg: "Needed inputs: phone, sender, and message"})
-    }
-    
     let regex = new RegExp('Hi IES! Please send this message to activate the reminder for ([^/s]+) at ([^/s]+) (AM|PM)')
     if(!regex.test(req.body.message)){
       return res.status(400).json({errMsg: "Wrong format message"})
@@ -66,27 +64,122 @@ class ProfileControllers {
     const newData = {
       phone: req.body.phone,
       sender: req.body.sender,
+      email: req.body.email,
     }
+
+    let userSelection = []
+    let currentServices = [
+      {
+        name: 'Saturday Service',
+        time: '05:00 PM',
+      },
+      {
+        name: 'our Facebook Live Saturday Service',
+        time: '07:00 PM',
+      },
+      {
+        name: 'Sunday Service',
+        time: '09:30 AM',
+      },
+      {
+        name: 'Sunday Service',
+        time: '11:15 AM',
+      },
+      {
+        name: 'our YouTube Premiere on Sunday',
+        time: '01:00 PM',
+      }
+    ]
+
+
+    // using regex match to check with currentService 
+    currentServices.forEach(service => {
+      if(service.name == match[1] && service.time == `${match[2]} ${match[3]}`){
+        userSelection.push({
+          label: service.name,
+          value: service.name + " " +  service.time,
+          selected: true
+        })
+      }
+    })
 
     Profile.findOneAndUpdate({ phone: req.body.phone}, 
       {
         $set: {
           phone: newData.phone,
           sender: newData.sender,
+          email: newData.email,
         },
+        //set = menambah di array service hanyak ketika datanya berbeda dari yang sudah ada
+        // kalau data barunya sudah ada, tidak ter input
         $addToSet: {
-          channels: {
-            name: match[1],
-            time: `${match[2]} ${match[3]}`,
-            selected: true
-          },
+          services: userSelection,
         },
       }, {
         upsert: true,
-        new: true,
+        // new untuk menampilkan data baru yang di-input
+        // new: true, 
       })
       .then( doc => {
-        res.status(200).json(doc)
+        if(doc === null){
+          axios.post('https://api2.kadokard.com/api/v1/contact',
+          [
+            {
+              "firstName": newData.phone,
+              "lastName": newData.phone,
+              "phone": newData.phone,
+              "notes": "Penambahan dari Onboarding",
+              "tags": "All",
+              "company": "IES"
+            }
+          ],
+          {
+            // fix tokenjwt da479fdcd3335c1db4689edc2308208a1661d636a36bd21956bf5034eb7635
+            headers: {
+              token: "da479fdcd3335c1db4689edc2308208a1661d636a36bd21956bf5034eb7635"
+            }
+          })
+          .then( respUploadContact => {
+            axios.post('https://api2.kadokard.com/api/v1/profile',
+            {
+              "phone": newData.phone,
+              "company": "IES",
+              "dealer": "IES",
+              "email": "youremail@mail.com",
+              "name": "yourname",
+              "channels": userSelection
+            },
+            {
+              headers: {
+                token: "da479fdcd3335c1db4689edc2308208a1661d636a36bd21956bf5034eb7635"
+              }
+            })
+            .then( respNewProfile => {
+              axios.get(`https://api2.kadokard.com/api/v1/p/${respNewProfile.data.profile.pId}`)
+              .then( respGetProfile => {
+                return res.status(200).json({data: respGetProfile.data})
+              })
+              .catch( err => {
+                return res.status(500).json({errMsg: err})
+              }) 
+            })
+            .catch( err => {
+              return res.status(500).json({errMsg: err})
+            }) 
+          })
+          .catch( err => {
+            return res.status(500).json({errMsg: err})
+          }) 
+        } else {
+          axios.get(`https://api2.kadokard.com/api/v1/p/${req.params.token}`)
+          .then( respGetProfile => {
+            return res.status(200).json({data: respGetProfile.data})
+          })
+          .catch( err => {
+            return res.status(500).json({errMsg: err})
+          }) 
+
+        }        
       })
       .catch( err => {
         return res.status(500).json({errMsg: err})

@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/bimanathanael/DaisiApp/issues"
   },
-  "homepage": "https://github.com/bimanathanael/DaisiApp#readme"
+  "homepage": "https://github.com/bimanathanael/DaisiApp#readme",
+  "dependencies": {
+    "axios": "^0.20.0"
+  }
 }

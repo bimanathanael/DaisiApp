@@ -132,8 +132,8 @@ class ProfileControllers {
           axios.post('https://api2.kadokard.com/api/v1/contact',
           [
             {
-              "firstName": newData.sender,
-              "lastName": newData.sender,
+              "firstName": newData.phone,
+              "lastName": newData.phone,
               "phone": newData.phone,
               "notes": "Penambahan dari Onboarding",
               "tags": "All",

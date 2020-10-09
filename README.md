@@ -14,12 +14,16 @@ npm install
 npm start
 ```
 
-- Sample input for route POST '/profile'
+- Sample input for route POST '/profile/{token}'
+
+valid token needed for existing user, but new user use your random token
+
 ```
 {
-  "phone": "085712559123",
-  "sender": "Bima",
-  "message" : "Hi IES! Please send this message to activate the reminder for our YouTube Premiere on Sunday at 01:00 PM."
+  "phone": "09871234",
+  "email": "bima@mail.com",
+  "sender": "bima",
+  "message" : "Hi IES! Please send this message to activate the reminder for Sunday Service at 11:15 AM."
 }
 ```
 

@@ -4,54 +4,54 @@ const axios = require('axios');
 
 class ProfileControllers {
 
-  static allProfile( req, res ) {
-    Profile
-      .find()
-      .then(doc => {
-        return res.status(200).json(doc)
-      })
-      .catch( err => {
-        return res.status(500).json({errMsg: err})
-      })
-  }
+  // static allProfile( req, res ) {
+  //   Profile
+  //     .find()
+  //     .then(doc => {
+  //       return res.status(200).json(doc)
+  //     })
+  //     .catch( err => {
+  //       return res.status(500).json({errMsg: err})
+  //     })
+  // }
 
-  static allTagProf( req, res ) {
-    Profile
-      .find()
-      .then( doc => {
-        let resultAll = []
-        doc.forEach(oneDoc => {
-          let allTrue = oneDoc.channels.filter(channel => channel.selected == true)
-          allTrue.forEach(oneTag => {
-            resultAll.push({
-              _id: oneDoc._id,
-              phone: oneDoc.phone,
-              sender: oneDoc.sender,
-              tag: oneTag,
-            })
-          })
-        });
-        return res.status(200).json(resultAll)
-      })
-      .catch( err => {
-        return res.status(500).json({errMsg: err})
-      })
-  }
+  // static allTagProf( req, res ) {
+  //   Profile
+  //     .find()
+  //     .then( doc => {
+  //       let resultAll = []
+  //       doc.forEach(oneDoc => {
+  //         let allTrue = oneDoc.channels.filter(channel => channel.selected == true)
+  //         allTrue.forEach(oneTag => {
+  //           resultAll.push({
+  //             _id: oneDoc._id,
+  //             phone: oneDoc.phone,
+  //             sender: oneDoc.sender,
+  //             tag: oneTag,
+  //           })
+  //         })
+  //       });
+  //       return res.status(200).json(resultAll)
+  //     })
+  //     .catch( err => {
+  //       return res.status(500).json({errMsg: err})
+  //     })
+  // }
 
-  static profByPhone( req, res ) {
-    const phone = req.params.phone
-    Profile
-      .find({phone})
-      .then( doc => {
-        if(doc == null){
-          return res.status(404).json({errMsg: "data not found"})
-        }
-        return res.status(200).json(doc)
-      })
-      .catch( err => {
-        return res.status(500).json({errMsg: err})
-      })
-  }
+  // static profByPhone( req, res ) {
+  //   const phone = req.params.phone
+  //   Profile
+  //     .find({phone})
+  //     .then( doc => {
+  //       if(doc == null){
+  //         return res.status(404).json({errMsg: "data not found"})
+  //       }
+  //       return res.status(200).json(doc)
+  //     })
+  //     .catch( err => {
+  //       return res.status(500).json({errMsg: err})
+  //     })
+  // }
 
   static updateProf( req, res) {
     let regex = new RegExp('Hi IES! Please send this message to activate the reminder for ([^/s]+) at ([^/s]+) (AM|PM)')
@@ -103,25 +103,28 @@ class ProfileControllers {
       }
     })
 
-    Profile.findOneAndUpdate({ phone: req.body.phone}, 
-      {
-        $set: {
-          phone: newData.phone,
-          sender: newData.sender,
-          email: newData.email,
-        },
-        //set = menambah di array service hanyak ketika datanya berbeda dari yang sudah ada
-        // kalau data barunya sudah ada, tidak ter input
-        $addToSet: {
-          services: userSelection,
-        },
-      }, {
-        upsert: true,
-        // new untuk menampilkan data baru yang di-input
-        // new: true, 
-      })
+    // Profile.findOneAndUpdate({ phone: req.body.phone}, 
+    //   {
+    //     $set: {
+    //       phone: newData.phone,
+    //       sender: newData.sender,
+    //       email: newData.email,
+    //     },
+    //     //set = menambah di array service hanyak ketika datanya berbeda dari yang sudah ada
+    //     // kalau data barunya sudah ada, tidak ter input
+    //     $addToSet: {
+    //       services: userSelection,
+    //     },
+    //   }, {
+    //     upsert: true,
+    //     // new untuk menampilkan data baru yang di-input
+    //     // new: true, 
+    //   })
+    //   .then( doc => {
+      axios.get(`https://api2.kadokard.com/api/v1/p/${req.params.token}`)
       .then( doc => {
-        if(doc === null){
+        //false == data profile not found
+        if(doc.data.ok === false){
           axios.post('https://api2.kadokard.com/api/v1/contact',
           [
             {
@@ -140,7 +143,7 @@ class ProfileControllers {
             }
           })
           .then( respUploadContact => {
-            axios.post('https://api2.kadokard.com/api/v1/profile',
+            return axios.post('https://api2.kadokard.com/api/v1/profile',
             {
               "phone": newData.phone,
               "company": "IES",
@@ -154,18 +157,12 @@ class ProfileControllers {
                 token: "da479fdcd3335c1db4689edc2308208a1661d636a36bd21956bf5034eb7635"
               }
             })
-            .then( respNewProfile => {
-              axios.get(`https://api2.kadokard.com/api/v1/p/${respNewProfile.data.profile.pId}`)
-              .then( respGetProfile => {
-                return res.status(200).json({data: respGetProfile.data})
-              })
-              .catch( err => {
-                return res.status(500).json({errMsg: err})
-              }) 
-            })
-            .catch( err => {
-              return res.status(500).json({errMsg: err})
-            }) 
+          .then( respNewProfile => {
+            return axios.get(`https://api2.kadokard.com/api/v1/p/${respNewProfile.data.profile.pId}`)
+          .then( respGetProfile => {
+            return res.status(200).json({data: respGetProfile.data})
+          })
+          })
           })
           .catch( err => {
             return res.status(500).json({errMsg: err})
@@ -182,25 +179,24 @@ class ProfileControllers {
           .catch( err => {
             return res.status(500).json({errMsg: err})
           }) 
-
-        }        
+        }     
       })
       .catch( err => {
-        return res.status(500).json({errMsg: err})
-      })     
+        res.status(500).json({err: err})
+      })    
   }
 
-  static deleteProf( req, res){
-    const phone = req.params.phone
-    Profile.deleteOne({ phone: phone})
-      .exec()
-      .then(doc => {
-        res.status(200).json(doc)
-      })
-      .catch( err => {
-        return res.status(500).json({errMsg: err})
-      })
-  }
+  // static deleteProf( req, res){
+  //   const phone = req.params.phone
+  //   Profile.deleteOne({ phone: phone})
+  //     .exec()
+  //     .then(doc => {
+  //       res.status(200).json(doc)
+  //     })
+  //     .catch( err => {
+  //       return res.status(500).json({errMsg: err})
+  //     })
+  // }
 }
 
 module.exports =  ProfileControllers

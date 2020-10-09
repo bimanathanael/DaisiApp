@@ -1,6 +1,9 @@
 {
   "name": "daisiapp",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.18.4"
+    },
   "description": "Whatsapp Profile subscription with nodeJs and mongoDB",
   "main": "app.js",
   "scripts": {

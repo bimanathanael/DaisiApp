@@ -125,8 +125,8 @@ class ProfileControllers {
           axios.post('https://api2.kadokard.com/api/v1/contact',
           [
             {
-              "firstName": newData.phone,
-              "lastName": newData.phone,
+              "firstName": newData.sender,
+              "lastName": newData.sender,
               "phone": newData.phone,
               "notes": "Penambahan dari Onboarding",
               "tags": "All",
@@ -171,9 +171,13 @@ class ProfileControllers {
             return res.status(500).json({errMsg: err})
           }) 
         } else {
-          axios.get(`https://api2.kadokard.com/api/v1/p/${req.params.token}`)
-          .then( respGetProfile => {
-            return res.status(200).json({data: respGetProfile.data})
+          axios.post(`https://api2.kadokard.com/api/v1/p/${req.params.token}`, {
+            "email": newData.email,
+            "name": newData.sender,
+            "channels": userSelection
+          })
+          .then( respPost => {
+            return res.status(200).json({data: respPost.data})
           })
           .catch( err => {
             return res.status(500).json({errMsg: err})

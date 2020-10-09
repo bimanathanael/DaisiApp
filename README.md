@@ -15,6 +15,9 @@ npm start
 ```
 
 - Sample input for route POST '/profile/{token}'
+
+valid token needed for existing user, but new user use your random token
+
 ```
 {
   "phone": "09871234",

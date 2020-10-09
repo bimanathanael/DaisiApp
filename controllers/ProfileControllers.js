@@ -4,6 +4,10 @@ const axios = require('axios');
 
 class ProfileControllers {
 
+  static hello (req, res) {
+    return res.status(200).json({msg: "Hello and Welcome"})
+  }
+
   // static allProfile( req, res ) {
   //   Profile
   //     .find()

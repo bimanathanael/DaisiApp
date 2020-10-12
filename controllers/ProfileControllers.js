@@ -16,7 +16,6 @@ class ProfileControllers {
     let match = regex.exec(req.body.message)
 
     const newData = {
-      msgId: req.body.msgId,
       phone: req.body.phone,
       sender: req.body.sender,
       email: req.body.email,

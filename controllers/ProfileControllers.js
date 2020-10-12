@@ -82,7 +82,7 @@ class ProfileControllers {
         "company": "IES",
         "dealer": "IES",
         "email": "youremail@mail.com",
-        "name": "yourname",
+        "name": "IES",
         "channels": userSelection
       },
       {
